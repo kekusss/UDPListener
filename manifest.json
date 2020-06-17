@@ -1,7 +1,7 @@
 {
     "name": "UDP Listener",
-    "description": "UDP packetes listener description xd",
-    "version": "1.0",
+    "description": "UDP packets listener description",
+    "version": "1.1",
     "app": {
       "background": {
         "scripts": ["main.js"]

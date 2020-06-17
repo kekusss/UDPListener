@@ -1,12 +1,12 @@
-//port to listening
+// port na którym nasłuchujemy
 var PORT = 1234;
-// data to send
+// dane do wysłania
 var myBuffer = str2ab();
 
 var socketId;
 
 /*
-convert string to ArrayBuffer
+Konwersja stringa na ArrayBuffer - w celu przesłania przez UDP
 */
 function str2ab(str = "ALA MA KOTA") {
     var buf=new ArrayBuffer(str.length);
@@ -18,30 +18,32 @@ function str2ab(str = "ALA MA KOTA") {
   }
 
 /*
-convert ArrayBuffer to string
+Konwersja ArrayBuffer na stringa w celu wyświetlenia przesłanych danych w oknie HTML
 */
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Uint8Array(buf));
   };
 
-
-// Handle the "onReceive" event.
+// wywoływana przez event "onReceive" - obsługa odebranych pakietów UDP
 var onReceive = function(info) {
   if (info.socketId !== socketId){
     console.log("something went wrong");
     return;
   }
+  // szczegółowe dane przekazywane do konsoli (obiekty)
   console.log("receive " + ab2str(info.data));
   console.log(info.data);
   
+  // wypisanie zawartości pakietów w oknie aplikacji, po kowersji z ArrayBuffer do stringów, każdy pakiet w nowej linii
   document.getElementById("log").innerHTML += "\n" + ab2str(info.data);
 };
 
-// Create the Socket, using chrome API
+// Utworzenie Socketu z użyciem chrome.sockets.udp API
 chrome.sockets.udp.create({}, function(socketInfo) {
   socketId = socketInfo.socketId;
-  // Setup event handler and bind socket.
+  // ustawienie wywołania funkcji onReceive gdy zostaną odebrane pakiety
   chrome.sockets.udp.onReceive.addListener(onReceive);
+  // bindowanie socketu, ustawienie adresu i portu nasłuchiwania, 0.0.0.0 oznacza, że nasłuchuje z wszystkich adresów
   chrome.sockets.udp.bind(socketId,
     "0.0.0.0", PORT, function(result) {
       if (result < 0) {
@@ -49,11 +51,11 @@ chrome.sockets.udp.create({}, function(socketInfo) {
         return;
       }
       console.log("now I'm listening on " + PORT + " port");
+
+      // wyslanie pierwszego testowego pakietu o treści "ALA MA KOTA"
       chrome.sockets.udp.send(socketId, myBuffer,
         '127.0.0.1', PORT, function(sendInfo) {
           console.log("sent " + sendInfo.bytesSent);
       });
   });
 });
-
-
