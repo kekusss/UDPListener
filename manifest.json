@@ -1,0 +1,16 @@
+{
+    "name": "UDP Listener",
+    "description": "UDP packetes listener description xd",
+    "version": "1.0",
+    "app": {
+      "background": {
+        "scripts": ["main.js"]
+      }
+    },
+    "sockets": {
+      "udp": {
+        "send": ["*"],
+        "bind": ["*"]
+      }
+    }
+}
